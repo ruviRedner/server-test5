@@ -2,16 +2,17 @@ import { model, Schema } from "mongoose";
 import { Iorg } from "../types/interfacec/Iorg";
 
 const orgSchema = new Schema<Iorg>({
-    name: {
+    orgName: {
         type: String,
-        unique: true
+        required: true,
+        
     },
-    resources: [
+    resources:[ 
         {
-            name:{type:String,unique:true},
+            name:{type:String, required:true},
             amount:Number
-        }
-    ],
+        }]
+    ,
     budget:Number
 })
 export default model<Iorg>('organization', orgSchema)
