@@ -3,6 +3,7 @@ import { LoginDto, RegisterDto } from "../types/DTO/userDto";
 import User from "../models/userModel";
 import Jwt from "jsonwebtoken";
 import orgModel from "../models/orgModel";
+import  PayloadDto  from "../types/DTO/payload";
 
 export const userLogin = async (user: LoginDto) => {
   try {
@@ -10,14 +11,14 @@ export const userLogin = async (user: LoginDto) => {
     if (!userFromDb) throw new Error("User not found");
     const match = await compare(user.password, userFromDb.password);
     if (!match) throw new Error("Worng password");
-
-    const token = Jwt.sign(
-      {
+    const payload:PayloadDto =  {
         userId: userFromDb._id,
         role: userFromDb.role,
         org: userFromDb.org,
         username: userFromDb.username,
-      },
+      }
+    const token = Jwt.sign(payload,
+     
       process.env.JWT_SECRET as string,
       {
         expiresIn: "10m",
@@ -33,7 +34,7 @@ export const userLogin = async (user: LoginDto) => {
 export const userRegister = async (user: RegisterDto) => {
   try {
     const { username, password, org, location, role } = user;
-    if (!username || !password || !org || !location || !role) {
+    if (!username || !password || !org  || !role) {
       throw new Error("Missing user data, all is require");
     }
 
@@ -50,7 +51,10 @@ export const userRegister = async (user: RegisterDto) => {
         const organization = await orgModel.findOne({name:`${org} - ${location}`})
         newUser.org = organization!
     }
-    
+    if(role === "terorist"){
+        const organization = await orgModel.findOne({name:newUser.org})
+        newUser.org = organization!
+    }
     return await newUser.save();
   } catch (error) {
     throw new Error("Can't do the thing you want me to do");
