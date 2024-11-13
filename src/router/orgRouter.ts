@@ -1,10 +1,8 @@
 import { Router } from "express";
 import { sid } from "../controller/orgController";
 
- const router = Router()
+const router = Router();
 
-router.post("/sid",sid)
+router.post("/sid", sid);
 
-
-
-export default router
+export default router;
