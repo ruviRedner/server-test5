@@ -1,12 +1,11 @@
-import { Document } from "mongoose"
+import { Document } from "mongoose";
 
-export interface Iorg extends Document{
-    name:string
-    resources:[
-        {
-            name:string
-            amount:number
-        }
-    ]
-    budget:number
+export interface Iorg extends Document {
+  orgName: string;
+  resources: {
+    name: string | null;
+    amount: number;
+  }[];
+
+  budget: number;
 }
