@@ -12,14 +12,15 @@ const userSchema = new Schema<Iuser>({
     type: String,
     required: true,
   },
-  org:String,
-  location:String,
-  role:{
-    type:String,
-    required:true
-  }
-  
- 
-  
+  org: { 
+    type: Schema.Types.Mixed,  
+    required: true,
+  },
+  location: String,
+  role: {
+    type: String,
+    required: true,
+  },
 });
+
 export default model<Iuser>("users", userSchema);
