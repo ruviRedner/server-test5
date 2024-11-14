@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+// import { Iorg } from "./Iorg";
 export enum StatusAction{
     lanched="lanched",
     INTERCEPT="INTERCEPT",
@@ -6,9 +7,9 @@ export enum StatusAction{
    
 }
 export interface Iaction{
-    terorestId:string | Types.ObjectId
+    teroristId:string | Types.ObjectId
     userId: string | Types.ObjectId
     status: StatusAction
-    location: string 
+    target: string
     timeHit: Date
 }
