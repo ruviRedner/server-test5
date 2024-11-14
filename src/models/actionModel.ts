@@ -6,14 +6,14 @@ const actionSchema = new Schema<Iaction>({
   status: {
     type: String,
   },
-  location: {
+  target: {
     type: String,
     required: true,
   },
   timeHit: {
     type: Date,
   },
-  terorestId: {
+  teroristId: {
     type: Schema.Types.ObjectId,
     ref: "users",
   },
