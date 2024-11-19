@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { handelAttack, handleDefense } from "../services/actionService";
+import { getListAction, handelAttack, handleDefense } from "../services/actionService";
 import { ActionDto } from "../types/DTO/actionDto";
 
 
@@ -15,6 +15,15 @@ export const attack = async (req: Request<any,any,ActionDto>, res: Response): Pr
 export const intercept = async (req: Request, res: Response): Promise<void> => {
     try {
      const result = await handleDefense(req.body);
+      res.status(201).json(result);
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(400);
+    }
+  };
+  export const getAction = async (req: Request, res: Response): Promise<void> => {
+    try {
+     const result = await getListAction();
       res.status(201).json(result);
     } catch (error) {
       console.log(error);

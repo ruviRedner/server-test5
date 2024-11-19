@@ -11,5 +11,6 @@ export interface Iaction{
     userId: string | Types.ObjectId
     status: StatusAction
     target: string
-    timeHit: Date
+    timeHit: number
+    misseilName:string
 }

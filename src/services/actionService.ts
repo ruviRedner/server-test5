@@ -1,3 +1,4 @@
+import { io } from "../app";
 import actionModel from "../models/actionModel";
 import missailModel from "../models/missailModel";
 import userModel from "../models/userModel";
@@ -13,6 +14,15 @@ export const handelAttack = async (action: ActionDto) => {
 
     if (!terrorist) {
       throw new Error("Missile not found in resources");
+    }
+    const misseilResources = terrorist.org?.resources.find(
+      (reso) => reso.name === action.misseil
+    );
+    if (!misseilResources) {
+      throw new Error("No resources found");
+    }
+    if (misseilResources.amount <= 0) {
+      throw new Error("You d'ont have misseils to fire ");
     }
 
     await userModel.updateOne(
@@ -33,42 +43,46 @@ export const handelAttack = async (action: ActionDto) => {
       status: StatusAction.lanched,
       target: action.location,
       timeHit: missile.speed,
+      misseilName: action.misseil,
     });
-    let timeHit = missile.speed * 10;
+
+    let timeHit = missile.speed;
     const interval = setInterval(async () => {
       try {
-        const currentAction = await actionModel.findById(newAction._id); 
-    
+        const currentAction = await actionModel.findById(newAction._id);
+
         if (!currentAction) {
           clearInterval(interval);
           return;
         }
-    
-       
+
         if (currentAction.status === StatusAction.INTERCEPT) {
           clearInterval(interval);
-          console.log("Missile intercepted. Interval stopped.");
+
           return;
         }
-    
-        
+
         timeHit--;
-        console.log(`timeHit: ${timeHit}`);
-    
-        // בדיקה אם הזמן נגמר ולא היה יירוט
+        // console.log(`timeHit: ${timeHit}`);
+
+        io.emit("attackTimer", {
+          remainingTime: timeHit,
+          actionID: newAction._id,
+        });
+
         if (timeHit <= 0) {
           clearInterval(interval);
-          console.log(`Hit occurred at ${timeHit}`);
-    
+          // console.log(`Hit occurred at ${timeHit}`);
+
           currentAction.status = StatusAction.hit;
           await currentAction.save();
+          io.emit("attackHit", { location: action.location });
         }
       } catch (error) {
         console.error("Error during interval:", error);
         clearInterval(interval);
       }
     }, 1000);
-    
 
     await newAction.save();
 
@@ -88,21 +102,19 @@ export const handleDefense = async (action: InterceptDto) => {
       status: StatusAction.lanched,
     });
 
-    console.log("Launched action found:", launchedAction);
-
     if (!launchedAction) {
       throw new Error("No launched action found for this target");
+    }
+    if (launchedAction.status === StatusAction.hit) {
+      throw new Error("Soory the miisile alredy hit");
     }
 
     const target = await userModel.findOne({ _id: action.interceptId });
     const defenseResource = target?.org?.resources.find(
       (resource) => resource.name === action.misseil
     );
-    console.log(target);
 
     if (!target) return;
-    console.log(launchedAction.target);
-    console.log(target.location);
 
     if (target?.location !== launchedAction.target) {
       throw new Error("This missiel is not to your location");
@@ -123,6 +135,19 @@ export const handleDefense = async (action: InterceptDto) => {
     return { status: "Defense action successful" };
   } catch (error) {
     console.error("Error in handleDefense:", error);
+    return {
+      status: "ERROR",
+      err: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+};
+
+export const getListAction = async () => {
+  try {
+    const actions = await actionModel.find({});
+    return actions;
+  } catch (error) {
+    console.error("Error in getListAction:", error);
     return {
       status: "ERROR",
       err: error instanceof Error ? error.message : "Unknown error",

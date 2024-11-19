@@ -11,7 +11,7 @@ const actionSchema = new Schema<Iaction>({
     required: true,
   },
   timeHit: {
-    type: Date,
+    type: Number,
   },
   teroristId: {
     type: Schema.Types.ObjectId,
@@ -21,5 +21,6 @@ const actionSchema = new Schema<Iaction>({
     type: Schema.Types.ObjectId,
     ref: "users",
   },
+  misseilName:String
 });
 export default model<Iaction>("Actions", actionSchema);
