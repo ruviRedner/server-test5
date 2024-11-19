@@ -11,7 +11,9 @@ const verifyUser = async (
     next: NextFunction
 ) => {
     try {    
-        const token: string =  req.headers["authorization"] as string;
+        const token:string =  req.headers["Authorization"] as string;
+        console.log(token);
+        
         const payload: TokenPayloadDTO = jwt.verify(token, process.env.TOKEN_SECRET as string) as TokenPayloadDTO
         (req as RequestWithUser).user = payload
         next()

@@ -26,7 +26,7 @@ export const userLogin = async (user: LoginDto) => {
 
       process.env.JWT_SECRET as string,
       {
-        expiresIn: "10m",
+        expiresIn: "100m",
       }
     );
 
