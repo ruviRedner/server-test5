@@ -6,7 +6,7 @@ import verifyUser from "../middleware/VerifyUser";
 
 router.post("/attack", verifyUser,attack)
 router.post("/intercept",intercept)
-router.get("/getAction",getAction)
+router.get("/getAction" ,getAction)
 
 
 
